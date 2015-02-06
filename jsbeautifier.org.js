@@ -1,52 +1,22 @@
-function wrap(the_global, initialize) {
-  if (typeof define === 'function' && (define.amd || define.cmd)) {
-    define(function () {
-      return initialize(the_global);
-    })
-  } else {
-    initialize(the_global, true);
-  }
-}
-
-// a => the_global
-// b => initialize
-!wrap(this, function(a, b) {
-    // ** mapping to `invoke`
-    function c(api_name, conf, conf_of_callback) {
-        a.WeixinJSBridge ? WeixinJSBridge.invoke(api_name, e(conf), function(result) {
-            g(api_name, result, conf_of_callback)
-        }) : j(api_name, conf_of_callback)
+! function(a, b) {
+    "function" == typeof define && (define.amd || define.cmd) ? define(function() {
+        return b(a)
+    }) : b(a, !0)
+}(this, function(a, b) {
+    function c(b, c, d) {
+        a.WeixinJSBridge ? WeixinJSBridge.invoke(b, e(c), function(a) {
+            g(b, a, d)
+        }) : j(b, d)
     }
 
-    // ** mapping to `on`
-    function d(api_name, conf_of_callback, fixme_another_conf) {
-        if (a.WeixinJSBridge) {
-            WeixinJSBridge.on(api_name, function (result) {
-                if (fixme_another_conf && fixme_another_conf.trigger) {
-                    fixme_another_conf.trigger(result);
-                }
-                g(api_name, result, conf_of_callback);
-            });
-        } else {
-            if (fixme_another_conf) {
-                j(api_name, fixme_another_conf);
-            } else {
-                j(api_name, conf_of_callback);
-            }
-        }
+    function d(b, c, d) {
+        a.WeixinJSBridge ? WeixinJSBridge.on(b, function(a) {
+            d && d.trigger && d.trigger(a), g(b, a, c)
+        }) : d ? j(b, d) : j(b, c)
     }
 
-    function e(conf) {
-        conf = conf || {};
-
-        conf.appId = z.appId;
-        conf.verifyAppId = z.appId;
-        conf.verifySignType = "sha1";
-        conf.verifyTimestamp = z.timestamp + "",
-        conf.verifyNonceStr = z.nonceStr,
-        conf.verifySignature = z.signature
-
-        return conf;
+    function e(a) {
+        return a = a || {}, a.appId = z.appId, a.verifyAppId = z.appId, a.verifySignType = "sha1", a.verifyTimestamp = z.timestamp + "", a.verifyNonceStr = z.nonceStr, a.verifySignature = z.signature, a
     }
 
     function f(a) {
@@ -59,60 +29,25 @@ function wrap(the_global, initialize) {
         }
     }
 
-    // api_name, result, conf_of_callback
-    function g(a, bridge_result, c) {
-        delete bridge_result.err_code;
-        delete bridge_result.err_desc;
-        delete bridge_result.err_detail;
-
-        var d = bridge_result.errMsg
-        if (!d) {
-            d = bridge_result.err_msg;
-            delete bridge_result.err_msg;
-            d = h(a, d, c);
-            bridge_result.errMsg = d;
-        }
-
-        c = c || {};
-        if (c._complete) {
-            c._complete(bridge_result);
-            delete c._complete;
-        }
-
-        d = bridge_result.errMsg || "";
-
-        if (z.debug && !c.isInnerInvoke) {
-            alert(JSON.stringify(bridge_result));
-        }
-
-        var e = d.indexOf(":");
-        var f = d.substring(e + 1);
-
-        switch (f) {
+    function g(a, b, c) {
+        var d, e, f;
+        switch (delete b.err_code, delete b.err_desc, delete b.err_detail, d = b.errMsg, d || (d = b.err_msg, delete b.err_msg, d = h(a, d, c), b.errMsg = d), c = c || {}, c._complete && (c._complete(b), delete c._complete), d = b.errMsg || "", z.debug && !c.isInnerInvoke && alert(JSON.stringify(b)), e = d.indexOf(":"), f = d.substring(e + 1)) {
             case "ok":
-                if (c.success) {
-                    c.success(bridge_result);
-                }
+                c.success && c.success(b);
                 break;
             case "cancel":
-                c.cancel && c.cancel(bridge_result);
+                c.cancel && c.cancel(b);
                 break;
             default:
-                c.fail && c.fail(bridge_result)
+                c.fail && c.fail(b)
         }
-
-        if (c.complete) {
-            c.complete(bridge_result)
-        }
+        c.complete && c.complete(b)
     }
 
-    function h(api_name, err_msg) {
-        var e;
-
-        if (err_msg) {
-            var idx = err_msg.indexOf(':');
-
-            switch (api_name) {
+    function h(a, b) {
+        var d, e, f, g;
+        if (b) {
+            switch (d = b.indexOf(":"), a) {
                 case o.config:
                     e = "config";
                     break;
@@ -120,57 +55,13 @@ function wrap(the_global, initialize) {
                     e = "openProductSpecificView";
                     break;
                 default:
-                    e = err_msg.substring(0, idx);
-                    e = e.replace(/_/g, " ");
-                    // \b  word boundary
-                    // http://blog.csdn.net/lxcnn/article/details/4355364
-                    // CamelCase
-                    // http://en.wikipedia.org/wiki/CamelCase
-                    e = e.replace(/\b\w+\b/g, function (a) {
-                        return a.substring(0, 1).toUpperCase() + a.substring(1);
-                    });
-                    e = e.substring(0, 1).toLowerCase() + e.substring(1);
-                    e = e.replace(/ /g, "");
-
-                    if (e.indexOf('Wcpay') !== -1) {
-                        e = e.replace('Wcpay', 'WCPay');
-                    }
-
-                    var f = q[e];
-                    if (f) {
-                        e = f;
-                    }
+                    e = b.substring(0, d), e = e.replace(/_/g, " "), e = e.replace(/\b\w+\b/g, function(a) {
+                        return a.substring(0, 1).toUpperCase() + a.substring(1)
+                    }), e = e.substring(0, 1).toLowerCase() + e.substring(1), e = e.replace(/ /g, ""), -1 != e.indexOf("Wcpay") && (e = e.replace("Wcpay", "WCPay")), f = p[e], f && (e = f)
             }
-
-            var g = err_msg.substring(idx + 1);
-
-            if (g === 'confirm') {
-                g = 'ok';
-            }
-
-            if (g.indexOf('failed_') !== -1) {
-                g = g.substring(7);
-            }
-
-            if (g.indexOf('fail_') !== -1) {
-                g = g.substring(5);
-            }
-
-            g = g.replace(/_/g, " ");
-            g = g.toLowerCase();
-
-            if (g === 'access denied' || g === 'no permission to execute') {
-                g = 'permission denied';
-            }
-
-            if (e === 'config' && g === 'function not exist') {
-                g = 'ok';
-            }
-
-            err_msg = e + ":" + g
+            g = b.substring(d + 1), "confirm" == g && (g = "ok"), "failed" == g && (g = "fail"), -1 != g.indexOf("failed_") && (g = g.substring(7)), -1 != g.indexOf("fail_") && (g = g.substring(5)), g = g.replace(/_/g, " "), g = g.toLowerCase(), ("access denied" == g || "no permission to execute" == g) && (g = "permission denied"), "config" == e && "function not exist" == g && (g = "ok"), b = e + ":" + g
         }
-
-        return err_msg;
+        return b
     }
 
     function i(a) {
@@ -282,8 +173,8 @@ function wrap(the_global, initialize) {
                 }()), x.preVerifyStartTime = l()
             }), z.beta && n()
         },
-        ready: function(callback) {
-            0 != B.state ? callback() : (A._completes.push(callback), !t && z.debug && callback())
+        ready: function(a) {
+            0 != B.state ? a() : (A._completes.push(a), !t && z.debug && a())
         },
         error: function(a) {
             "6.0.2" > w || (-1 == B.state ? a(B.res) : A._fail = a)
@@ -306,55 +197,55 @@ function wrap(the_global, initialize) {
                 }, a
             }())
         },
-        onMenuShareTimeline: function (call_conf) {
+        onMenuShareTimeline: function(a) {
             d(o.onMenuShareTimeline, {
                 complete: function() {
                     c("shareTimeline", {
-                        title: call_conf.title || r, // ** document.title
-                        desc: call_conf.title || r,
-                        img_url: call_conf.imgUrl,
-                        link: call_conf.link || location.href
-                    }, call_conf)
+                        title: a.title || r,
+                        desc: a.title || r,
+                        img_url: a.imgUrl,
+                        link: a.link || location.href
+                    }, a)
                 }
-            }, call_conf)
+            }, a)
         },
-        onMenuShareAppMessage: function (call_conf) {
+        onMenuShareAppMessage: function(a) {
             d(o.onMenuShareAppMessage, {
                 complete: function() {
                     c("sendAppMessage", {
-                        title: call_conf.title || r,
-                        desc: call_conf.desc || "",
-                        link: call_conf.link || location.href,
-                        img_url: call_conf.imgUrl,
-                        type: call_conf.type || "link",
-                        data_url: call_conf.dataUrl || ""
-                    }, call_conf)
+                        title: a.title || r,
+                        desc: a.desc || "",
+                        link: a.link || location.href,
+                        img_url: a.imgUrl,
+                        type: a.type || "link",
+                        data_url: a.dataUrl || ""
+                    }, a)
                 }
-            }, call_conf)
+            }, a)
         },
-        onMenuShareQQ: function(call_conf) {
+        onMenuShareQQ: function(a) {
             d(o.onMenuShareQQ, {
                 complete: function() {
                     c("shareQQ", {
-                        title: call_conf.title || r,
-                        desc: call_conf.desc || "",
-                        img_url: call_conf.imgUrl,
-                        link: call_conf.link || location.href
-                    }, call_conf)
+                        title: a.title || r,
+                        desc: a.desc || "",
+                        img_url: a.imgUrl,
+                        link: a.link || location.href
+                    }, a)
                 }
-            }, call_conf)
+            }, a)
         },
-        onMenuShareWeibo: function(call_conf) {
+        onMenuShareWeibo: function(a) {
             d(o.onMenuShareWeibo, {
                 complete: function() {
                     c("shareWeiboApp", {
-                        title: call_conf.title || r,
-                        desc: call_conf.desc || "",
-                        img_url: call_conf.imgUrl,
-                        link: call_conf.link || location.href
-                    }, call_conf)
+                        title: a.title || r,
+                        desc: a.desc || "",
+                        img_url: a.imgUrl,
+                        link: a.link || location.href
+                    }, a)
                 }
-            }, call_conf)
+            }, a)
         },
         startRecord: function(a) {
             c("startRecord", {}, a)
@@ -454,26 +345,23 @@ function wrap(the_global, initialize) {
                 }, a
             }())
         },
-        openLocation: function(call_conf) {
+        openLocation: function(a) {
             c("openLocation", {
-                latitude: call_conf.latitude,
-                longitude: call_conf.longitude,
-                name: call_conf.name || "",
-                address: call_conf.address || "",
-                scale: call_conf.scale || 28,
-                infoUrl: call_conf.infoUrl || ""
-            }, call_conf)
+                latitude: a.latitude,
+                longitude: a.longitude,
+                name: a.name || "",
+                address: a.address || "",
+                scale: a.scale || 28,
+                infoUrl: a.infoUrl || ""
+            }, a)
         },
-        getLocation: function(call_conf) {
-            call_conf = call_conf || {};
-            c(o.getLocation, {
-                // http://en.wikipedia.org/wiki/World_Geodetic_System#A_new_World_Geodetic_System:_WGS_84
-                type: call_conf.type || "wgs84"
+        getLocation: function(a) {
+            a = a || {}, c(o.getLocation, {
+                type: a.type || "wgs84"
             }, function() {
-                call_conf._complete = function(a) {
+                return a._complete = function(a) {
                     delete a.type
-                }
-                return call_conf
+                }, a
             }())
         },
         hideOptionMenu: function(a) {
@@ -503,17 +391,15 @@ function wrap(the_global, initialize) {
         showAllNonBaseMenuItem: function(a) {
             c("showAllNonBaseMenuItem", {}, a)
         },
-        scanQRCode: function(call_conf) {
-            call_conf = call_conf || {};
-            c("scanQRCode", {
-                needResult: call_conf.needResult || 0,
-                scanType: call_conf.scanType || ["qrCode", "barCode"]
+        scanQRCode: function(a) {
+            a = a || {}, c("scanQRCode", {
+                needResult: a.needResult || 0,
+                scanType: a.scanType || ["qrCode", "barCode"]
             }, function() {
-                call_conf._complete = function(a) {
+                return a._complete = function(a) {
                     var b, c;
                     v && (b = a.resultStr, b && (c = JSON.parse(b), a.resultStr = c && c.scan_code && c.scan_code.scan_result))
-                }
-                return call_conf
+                }, a
             }())
         },
         openProductSpecificView: function(a) {
