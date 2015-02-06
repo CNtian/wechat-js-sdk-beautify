@@ -465,21 +465,23 @@ function wrap(the_global, initialize) {
                 }, a
             }())
         },
-        openLocation: function(a) {
+        openLocation: function (call_conf) {
             c("openLocation", {
-                latitude: a.latitude,
-                longitude: a.longitude,
-                name: a.name || "",
-                address: a.address || "",
-                scale: a.scale || 28,
-                infoUrl: a.infoUrl || ""
-            }, a)
+                latitude: call_conf.latitude,
+                longitude: call_conf.longitude,
+                name: call_conf.name || "",
+                address: call_conf.address || "",
+                scale: call_conf.scale || 28,
+                infoUrl: call_conf.infoUrl || ""
+            }, call_conf)
         },
         getLocation: function (conf) {
             c(p.getLocation,
                 function () {
                     var b = f(conf, "jsapi_location");
-                    return b.type = "wgs84", b
+                    // http://en.wikipedia.org/wiki/World_Geodetic_System#A_new_World_Geodetic_System:_WGS_84
+                    b.type = "wgs84";
+                    return b;
                 }(),
                 function () {
                     conf._complete = function (a) {
