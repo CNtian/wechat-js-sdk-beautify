@@ -475,15 +475,18 @@ function wrap(the_global, initialize) {
                 infoUrl: a.infoUrl || ""
             }, a)
         },
-        getLocation: function(a) {
-            c(p.getLocation, function() {
-                var b = f(a, "jsapi_location");
-                return b.type = "wgs84", b
-            }(), function() {
-                return a._complete = function(a) {
-                    delete a.type
-                }, a
-            }())
+        getLocation: function (conf) {
+            c(p.getLocation,
+                function () {
+                    var b = f(conf, "jsapi_location");
+                    return b.type = "wgs84", b
+                }(),
+                function () {
+                    conf._complete = function (a) {
+                        delete a.type
+                    };
+                    return conf;
+                }());
         },
         hideOptionMenu: function(a) {
             c("hideOptionMenu", {}, a)
