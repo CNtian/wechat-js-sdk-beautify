@@ -49,13 +49,13 @@ function wrap(the_global, initialize) {
         return conf
     }
 
-    function f(a, b) {
+    function f(call_conf, scope) {
         return {
-            scope: b,
+            scope: scope,
             signType: "sha1",
-            timeStamp: a.timestamp + "",
-            nonceStr: a.nonceStr,
-            addrSign: a.addrSign
+            timeStamp: call_conf.timestamp + "",
+            nonceStr: call_conf.nonceStr,
+            addrSign: call_conf.addrSign
         }
     }
 
