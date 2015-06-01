@@ -95,10 +95,14 @@ function wrap(the_global, initialize) {
                 }
                 break;
             case "cancel":
-                c.cancel && c.cancel(bridge_result);
+                if (c.cancel) {
+                    c.cancel(bridge_result);
+                }
                 break;
             default:
-                c.fail && c.fail(bridge_result)
+                if (c.fail) {
+                    c.fail(bridge_result);
+                }
         }
 
         if (c.complete) {

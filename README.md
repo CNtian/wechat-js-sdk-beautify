@@ -4,9 +4,9 @@
 
 # last update
 
-2015.Feb.26
+2015.JUN.23
 
-# Howto
+# how to
 
 1. 运行 `npm run keepup`，会同步最新的 sdk 文件
 2. 然后执行 `git diff jsbeautifier.org.js`，即可查看这期间微信偷偷摸摸改了些什么
