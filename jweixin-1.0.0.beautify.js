@@ -182,7 +182,7 @@ function wrap(the_global, initialize) {
     }
 
     function j(a, b) {
-        if (z.debug && !b.isInnerInvoke) {
+        if (!(!z.debug || b && b.isInnerInvoke)) {
             var c = p[a];
             c && (a = c), b && b._complete && delete b._complete, console.log('"' + a + '",', b || "")
         }
@@ -224,6 +224,7 @@ function wrap(the_global, initialize) {
         onMenuShareAppMessage: "menu:share:appmessage",
         onMenuShareQQ: "menu:share:qq",
         onMenuShareWeibo: "menu:share:weiboApp",
+        onMenuShareQZone: "menu:share:QZone",
         previewImage: "imagePreview",
         getLocation: "geoLocation",
         openProductSpecificView: "openProductViewWithPid",
@@ -319,7 +320,7 @@ function wrap(the_global, initialize) {
                     c("shareTimeline", {
                         title: call_conf.title || r, // ** document.title
                         desc: call_conf.title || r,
-                        img_url: call_conf.imgUrl,
+                        img_url: call_conf.imgUrl || "",
                         link: call_conf.link || location.href
                     }, call_conf)
                 }
@@ -332,7 +333,7 @@ function wrap(the_global, initialize) {
                         title: call_conf.title || r,
                         desc: call_conf.desc || "",
                         link: call_conf.link || location.href,
-                        img_url: call_conf.imgUrl,
+                        img_url: call_conf.imgUrl || "",
                         type: call_conf.type || "link",
                         data_url: call_conf.dataUrl || ""
                     }, call_conf)
@@ -345,7 +346,7 @@ function wrap(the_global, initialize) {
                     c("shareQQ", {
                         title: call_conf.title || r,
                         desc: call_conf.desc || "",
-                        img_url: call_conf.imgUrl,
+                        img_url: call_conf.imgUrl || "",
                         link: call_conf.link || location.href
                     }, call_conf)
                 }
@@ -357,12 +358,25 @@ function wrap(the_global, initialize) {
                     c("shareWeiboApp", {
                         title: call_conf.title || r,
                         desc: call_conf.desc || "",
-                        img_url: call_conf.imgUrl,
+                        img_url: call_conf.imgUrl || "",
                         link: call_conf.link || location.href
                     }, call_conf)
                 }
             }, call_conf)
         },
+        onMenuShareQZone: function(a) {
+            d(o.onMenuShareQZone, {
+                complete: function() {
+                    c("shareQZone", {
+                        title: a.title || r,
+                        desc: a.desc || "",
+                        img_url: a.imgUrl || "",
+                        link: a.link || location.href
+                    }, a)
+                }
+            }, a)
+        },
+
         startRecord: function(a) {
             c("startRecord", {}, a)
         },
@@ -412,7 +426,8 @@ function wrap(the_global, initialize) {
             c("chooseImage", {
                 scene: "1|2",
                 count: a.count || 9,
-                sizeType: a.sizeType || ["original", "compressed"]
+                sizeType: a.sizeType || ["original", "compressed"],
+                sourceType: a.sourceType || ["album", "camera"]
             }, function() {
                 return a._complete = function(a) {
                     if (u) {

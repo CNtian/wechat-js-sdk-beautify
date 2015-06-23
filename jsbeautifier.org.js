@@ -73,7 +73,7 @@
     }
 
     function j(a, b) {
-        if (z.debug && !b.isInnerInvoke) {
+        if (!(!z.debug || b && b.isInnerInvoke)) {
             var c = p[a];
             c && (a = c), b && b._complete && delete b._complete, console.log('"' + a + '",', b || "")
         }
@@ -115,6 +115,7 @@
         onMenuShareAppMessage: "menu:share:appmessage",
         onMenuShareQQ: "menu:share:qq",
         onMenuShareWeibo: "menu:share:weiboApp",
+        onMenuShareQZone: "menu:share:QZone",
         previewImage: "imagePreview",
         getLocation: "geoLocation",
         openProductSpecificView: "openProductViewWithPid",
@@ -210,7 +211,7 @@
                     c("shareTimeline", {
                         title: a.title || r,
                         desc: a.title || r,
-                        img_url: a.imgUrl,
+                        img_url: a.imgUrl || "",
                         link: a.link || location.href
                     }, a)
                 }
@@ -223,7 +224,7 @@
                         title: a.title || r,
                         desc: a.desc || "",
                         link: a.link || location.href,
-                        img_url: a.imgUrl,
+                        img_url: a.imgUrl || "",
                         type: a.type || "link",
                         data_url: a.dataUrl || ""
                     }, a)
@@ -236,7 +237,7 @@
                     c("shareQQ", {
                         title: a.title || r,
                         desc: a.desc || "",
-                        img_url: a.imgUrl,
+                        img_url: a.imgUrl || "",
                         link: a.link || location.href
                     }, a)
                 }
@@ -248,7 +249,19 @@
                     c("shareWeiboApp", {
                         title: a.title || r,
                         desc: a.desc || "",
-                        img_url: a.imgUrl,
+                        img_url: a.imgUrl || "",
+                        link: a.link || location.href
+                    }, a)
+                }
+            }, a)
+        },
+        onMenuShareQZone: function(a) {
+            d(o.onMenuShareQZone, {
+                complete: function() {
+                    c("shareQZone", {
+                        title: a.title || r,
+                        desc: a.desc || "",
+                        img_url: a.imgUrl || "",
                         link: a.link || location.href
                     }, a)
                 }
@@ -303,7 +316,8 @@
             c("chooseImage", {
                 scene: "1|2",
                 count: a.count || 9,
-                sizeType: a.sizeType || ["original", "compressed"]
+                sizeType: a.sizeType || ["original", "compressed"],
+                sourceType: a.sourceType || ["album", "camera"]
             }, function() {
                 return a._complete = function(a) {
                     if (u) {
