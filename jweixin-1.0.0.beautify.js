@@ -193,7 +193,7 @@ function wrap(the_global, initialize) {
     }
 
     function k() {
-        if (!("6.0.2" > w || y.systemType < 0)) {
+        if (!("6.0.2" > client_version || y.systemType < 0)) {
             var b = new Image;
             y.appId = z.appId, y.initTime = x.initEndTime - x.initStartTime, y.preVerifyTime = x.preVerifyEndTime - x.preVerifyStartTime, C.getNetworkType({
                 isInnerInvoke: !0,
@@ -206,12 +206,20 @@ function wrap(the_global, initialize) {
         }
     }
 
-    function l() {
-        return (new Date).getTime()
+    function now() {
+        return (new Date).getTime();
     }
 
-    function m(b) {
-        t && (a.WeixinJSBridge ? b() : q.addEventListener && q.addEventListener("WeixinJSBridgeReady", b, !1))
+    function m (ready_callback) {
+        if (is_micromessenger) {
+            if (a.WeixinJSBridge) {
+                ready_callback();
+            } else {
+                if (q.addEventListener) {
+                    q.addEventListener("WeixinJSBridgeReady", ready_callback, false);
+                }
+            }
+        }
     }
 
     function n() {
@@ -221,7 +229,18 @@ function wrap(the_global, initialize) {
             a.WeixinJSBridge && WeixinJSBridge.on(b, c)
         })
     }
-    var o, p, q, r, s, t, u, v, w, x, y, z, A, B, C;
+
+    var o,
+        p,
+        q,
+        r,
+        x,
+        y,
+        z,
+        A,
+        B,
+        C;
+
     if (!a.jWeixin) return o = {
         config: "preVerifyJSAPI",
         onMenuShareTimeline: "menu:share:timeline",
@@ -235,36 +254,62 @@ function wrap(the_global, initialize) {
         addCard: "batchAddCard",
         openCard: "batchViewCard",
         chooseWXPay: "getBrandWCPayRequest"
-    }, p = function() {
+    };
+
+    p = function() {
         var b, a = {};
         for (b in o) a[o[b]] = b;
         return a
-    }(), q = a.document, r = q.title, s = navigator.userAgent.toLowerCase(), t = -1 != s.indexOf("micromessenger"), u = -1 != s.indexOf("android"), v = -1 != s.indexOf("iphone") || -1 != s.indexOf("ipad"), w = function() {
-        var a = s.match(/micromessenger\/(\d+\.\d+\.\d+)/) || s.match(/micromessenger\/(\d+\.\d+)/);
+    }();
+
+    q = a.document;
+    r = q.title;
+
+    var user_agent = navigator.userAgent.toLowerCase();
+    var is_micromessenger = -1 != user_agent.indexOf("micromessenger");
+    var is_android = -1 != user_agent.indexOf("android");
+    var is_ios = -1 != user_agent.indexOf("iphone") || -1 != user_agent.indexOf("ipad");
+
+    var client_version = function() {
+        var a = user_agent.match(/micromessenger\/(\d+\.\d+\.\d+)/) || user_agent.match(/micromessenger\/(\d+\.\d+)/);
         return a ? a[1] : ""
-    }(), x = {
-        initStartTime: l(),
+    }();
+
+    x = {
+        initStartTime: now(),
         initEndTime: 0,
         preVerifyStartTime: 0,
         preVerifyEndTime: 0
-    }, y = {
+    };
+
+    y = {
         version: 1,
         appId: "",
         initTime: 0,
         preVerifyTime: 0,
         networkType: "",
         isPreVerifyOk: 1,
-        systemType: v ? 1 : u ? 2 : -1,
-        clientVersion: w,
+        systemType: is_ios ? 1 : is_android ? 2 : -1,
+        clientVersion: client_version,
         url: encodeURIComponent(location.href)
-    }, z = {}, A = {
+    };
+
+    z = {};
+
+    A = {
         _completes: []
-    }, B = {
+    };
+
+    B = {
         state: 0,
         res: {}
-    }, m(function() {
-        x.initEndTime = l()
-    }), C = {
+    };
+
+    m(function() {
+        x.initEndTime = now()
+    });
+
+    C = {
         config: function(a) {
             z = a, j("config", a);
             var b = z.check === !1 ? !1 : !0;
@@ -274,7 +319,7 @@ function wrap(the_global, initialize) {
                     verifyJsApiList: i(z.jsApiList)
                 }, function() {
                     A._complete = function(a) {
-                        x.preVerifyEndTime = l(), B.state = 1, B.res = a
+                        x.preVerifyEndTime = now(), B.state = 1, B.res = a
                     }, A.success = function() {
                         y.isPreVerifyOk = 0
                     }, A.fail = function(a) {
@@ -287,7 +332,7 @@ function wrap(the_global, initialize) {
                         for (var c = 0, d = a.length; d > c; ++c) a[c]();
                         A._completes = []
                     }, A
-                }()), x.preVerifyStartTime = l();
+                }()), x.preVerifyStartTime = now();
                 else {
                     for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d) a[d]();
                     A._completes = []
@@ -295,10 +340,10 @@ function wrap(the_global, initialize) {
             }), z.beta && n()
         },
         ready: function(callback) {
-            0 != B.state ? callback() : (A._completes.push(callback), !t && z.debug && callback())
+            0 != B.state ? callback() : (A._completes.push(callback), !is_micromessenger && z.debug && callback())
         },
         error: function(a) {
-            "6.0.2" > w || (-1 == B.state ? a(B.res) : A._fail = a)
+            "6.0.2" > client_version || (-1 == B.state ? a(B.res) : A._fail = a)
         },
         checkJsApi: function(a) {
             var b = function(a) {
@@ -310,7 +355,7 @@ function wrap(the_global, initialize) {
                 jsApiList: i(a.jsApiList)
             }, function() {
                 return a._complete = function(a) {
-                    if (u) {
+                    if (is_android) {
                         var c = a.checkResult;
                         c && (a.checkResult = JSON.parse(c))
                     }
@@ -434,7 +479,7 @@ function wrap(the_global, initialize) {
                 sourceType: a.sourceType || ["album", "camera"]
             }, function() {
                 return a._complete = function(a) {
-                    if (u) {
+                    if (is_android) {
                         var b = a.localIds;
                         b && (a.localIds = JSON.parse(b))
                     }
@@ -537,7 +582,7 @@ function wrap(the_global, initialize) {
             }, function() {
                 call_conf._complete = function(a) {
                     var b, c;
-                    v && (b = a.resultStr, b && (c = JSON.parse(b), a.resultStr = c && c.scan_code && c.scan_code.scan_result))
+                    is_ios && (b = a.resultStr, b && (c = JSON.parse(b), a.resultStr = c && c.scan_code && c.scan_code.scan_result))
                 }
                 return call_conf
             }())
