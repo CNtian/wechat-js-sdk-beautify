@@ -345,27 +345,27 @@ function wrap(the_global, initialize) {
                         },
                         function () {
                             A._complete = function(res) {
-                               x.preVerifyEndTime = now();
-                               B.state = 1;
-                               B.res = res;
+                                x.preVerifyEndTime = now();
+                                B.state = 1;
+                                B.res = res;
                             };
                             A.success = function() {
-                               STATS_INFO.isPreVerifyOk = 0;
+                                STATS_INFO.isPreVerifyOk = 0;
                             };
                             A.fail = function(err) {
-                               A._fail ? A._fail(err) : B.state = -1
+                                A._fail ? A._fail(err) : B.state = -1
                             };
 
                             var a = A._completes;
                             a.push(function () {
-                               if (!CONFIG_COPY.debug) {
-                                   statsReport();
-                               }
+                                if (!CONFIG_COPY.debug) {
+                                    statsReport();
+                                }
                             });
 
                             A.complete = function() {
-                               for (var c = 0, d = a.length; d > c; ++c) a[c]();
-                               A._completes = []
+                                for (var c = 0, d = a.length; d > c; ++c) a[c]();
+                                A._completes = []
                             };
 
                             return A;
@@ -391,8 +391,16 @@ function wrap(the_global, initialize) {
                 }
             }
         },
-        error: function(a) {
-            "6.0.2" > client_version || (-1 == B.state ? a(B.res) : A._fail = a)
+        error: function(callback) {
+            if ("6.0.2" > client_version) {
+                return;
+            } else {
+                if (B.state == -1) {
+                    callback(B.res)
+                } else {
+                    A._fail = callback;
+                }
+            }
         },
         checkJsApi: function(a) {
             var b = function(a) {
