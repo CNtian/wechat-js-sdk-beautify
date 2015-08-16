@@ -192,15 +192,28 @@ function wrap(the_global, initialize) {
         }
     }
 
-    function k() {
-        if (!("6.0.2" > client_version || y.systemType < 0)) {
-            var b = new Image;
-            y.appId = z.appId, y.initTime = x.initEndTime - x.initStartTime, y.preVerifyTime = x.preVerifyEndTime - x.preVerifyStartTime, C.getNetworkType({
-                isInnerInvoke: !0,
-                success: function(a) {
-                    y.networkType = a.networkType;
-                    var c = "https://open.weixin.qq.com/sdk/report?v=" + y.version + "&o=" + y.isPreVerifyOk + "&s=" + y.systemType + "&c=" + y.clientVersion + "&a=" + y.appId + "&n=" + y.networkType + "&i=" + y.initTime + "&p=" + y.preVerifyTime + "&u=" + y.url;
-                    b.src = c
+    // ** big data for Tecnet, not for you
+    function statsReport() {
+        if (!("6.0.2" > client_version || STATS_INFO.systemType < 0)) {
+            STATS_INFO.appId = z.appId;
+            STATS_INFO.initTime = x.initEndTime - x.initStartTime;
+            STATS_INFO.preVerifyTime = x.preVerifyEndTime - x.preVerifyStartTime;
+            C.getNetworkType({
+                isInnerInvoke: true,
+                success: function (a) {
+                    STATS_INFO.networkType = a.networkType;
+                    var src = "https://open.weixin.qq.com/sdk/report?v=" + STATS_INFO.version
+                    src += "&o=" + STATS_INFO.isPreVerifyOk;
+                    src += "&s=" + STATS_INFO.systemType;
+                    src += "&src=" + STATS_INFO.clientVersion;
+                    src += "&a=" + STATS_INFO.appId;
+                    src += "&n=" + STATS_INFO.networkType;
+                    src += "&i=" + STATS_INFO.initTime;
+                    src += "&p=" + STATS_INFO.preVerifyTime;
+                    src += "&u=" + STATS_INFO.url;
+
+                    var b = new Image;
+                    b.src = src
                 }
             })
         }
@@ -235,9 +248,7 @@ function wrap(the_global, initialize) {
         q,
         r,
         x,
-        y,
         z,
-        A,
         B,
         C;
 
@@ -282,7 +293,7 @@ function wrap(the_global, initialize) {
         preVerifyEndTime: 0
     };
 
-    y = {
+    var STATS_INFO = {
         version: 1,
         appId: "",
         initTime: 0,
@@ -296,7 +307,7 @@ function wrap(the_global, initialize) {
 
     z = {};
 
-    A = {
+    var A = {
         _completes: []
     };
 
@@ -311,27 +322,44 @@ function wrap(the_global, initialize) {
 
     C = {
         config: function(a) {
-            z = a, j("config", a);
-            var b = z.check === !1 ? !1 : !0;
+            z = a;
+            j("config", a);
+
+            var b = true
+            if (z.check === false) {
+              b = false;
+            }
+
             m(function() {
                 var a, d, e;
                 if (b) c(o.config, {
                     verifyJsApiList: i(z.jsApiList)
                 }, function() {
                     A._complete = function(a) {
-                        x.preVerifyEndTime = now(), B.state = 1, B.res = a
-                    }, A.success = function() {
-                        y.isPreVerifyOk = 0
-                    }, A.fail = function(a) {
+                        x.preVerifyEndTime = now();
+                        B.state = 1;
+                        B.res = a;
+                    };
+                    A.success = function() {
+                        STATS_INFO.isPreVerifyOk = 0;
+                    };
+                    A.fail = function(a) {
                         A._fail ? A._fail(a) : B.state = -1
                     };
+
                     var a = A._completes;
-                    return a.push(function() {
-                        z.debug || k()
-                    }), A.complete = function() {
+                    a.push(function () {
+                        if (!z.debug) {
+                            statsReport();
+                        }
+                    });
+
+                    A.complete = function() {
                         for (var c = 0, d = a.length; d > c; ++c) a[c]();
                         A._completes = []
-                    }, A
+                    };
+
+                    return A;
                 }()), x.preVerifyStartTime = now();
                 else {
                     for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d) a[d]();
