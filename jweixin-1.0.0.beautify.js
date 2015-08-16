@@ -117,10 +117,10 @@ function wrap(the_global, initialize) {
             var idx = err_msg.indexOf(':');
 
             switch (api_name) {
-                case o.config:
+                case API_NAMES.config:
                     e = "config";
                     break;
-                case o.openProductSpecificView:
+                case API_NAMES.openProductSpecificView:
                     e = "openProductSpecificView";
                     break;
                 default:
@@ -180,14 +180,14 @@ function wrap(the_global, initialize) {
     function i(a) {
         var b, c, d, e;
         if (a) {
-            for (b = 0, c = a.length; c > b; ++b) d = a[b], e = o[d], e && (a[b] = e);
+            for (b = 0, c = a.length; c > b; ++b) d = a[b], e = API_NAMES[d], e && (a[b] = e);
             return a
         }
     }
 
     function j(a, b) {
         if (!(!CONFIG_COPY.debug || b && b.isInnerInvoke)) {
-            var c = p[a];
+            var c = API_NAMES_REVERSE[a];
             c && (a = c), b && b._complete && delete b._complete, console.log('"' + a + '",', b || "")
         }
     }
@@ -247,15 +247,15 @@ function wrap(the_global, initialize) {
         }
     }
 
-    var o,
-        p,
-        q,
+    var q,
         r,
         x,
         B,
         C;
 
-    if (!a.jWeixin) return o = {
+    if (!a.jWeixin) return;
+
+    var API_NAMES = {
         config: "preVerifyJSAPI",
         onMenuShareTimeline: "menu:share:timeline",
         onMenuShareAppMessage: "menu:share:appmessage",
@@ -270,11 +270,13 @@ function wrap(the_global, initialize) {
         chooseWXPay: "getBrandWCPayRequest"
     };
 
-    p = function() {
-        var b, a = {};
-        for (b in o) a[o[b]] = b;
-        return a
-    }();
+    var API_NAMES_REVERSE = (function() {
+        var names = {};
+        for (var key in API_NAMES) {
+            names[API_NAMES[key]] = key;
+        }
+        return names;
+    }());
 
     q = a.document;
     r = q.title;
@@ -335,39 +337,46 @@ function wrap(the_global, initialize) {
 
             m(function() {
                 var a, d, e;
-                if (b) c(o.config, {
-                    verifyJsApiList: i(CONFIG_COPY.jsApiList)
-                }, function() {
-                    A._complete = function(a) {
-                        x.preVerifyEndTime = now();
-                        B.state = 1;
-                        B.res = a;
-                    };
-                    A.success = function() {
-                        STATS_INFO.isPreVerifyOk = 0;
-                    };
-                    A.fail = function(a) {
-                        A._fail ? A._fail(a) : B.state = -1
-                    };
+                if (b) {
+                    c(
+                        API_NAMES.config,
+                        {
+                            verifyJsApiList: i(CONFIG_COPY.jsApiList)
+                        },
+                        function () {
+                            A._complete = function(a) {
+                               x.preVerifyEndTime = now();
+                               B.state = 1;
+                               B.res = a;
+                            };
+                            A.success = function() {
+                               STATS_INFO.isPreVerifyOk = 0;
+                            };
+                            A.fail = function(a) {
+                               A._fail ? A._fail(a) : B.state = -1
+                            };
 
-                    var a = A._completes;
-                    a.push(function () {
-                        if (!CONFIG_COPY.debug) {
-                            statsReport();
-                        }
-                    });
+                            var a = A._completes;
+                            a.push(function () {
+                               if (!CONFIG_COPY.debug) {
+                                   statsReport();
+                               }
+                            });
 
-                    A.complete = function() {
-                        for (var c = 0, d = a.length; d > c; ++c) a[c]();
-                        A._completes = []
-                    };
+                            A.complete = function() {
+                               for (var c = 0, d = a.length; d > c; ++c) a[c]();
+                               A._completes = []
+                            };
 
-                    return A;
-                }()), x.preVerifyStartTime = now();
-                else {
-                    for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d) a[d]();
-                    A._completes = []
-                }
+                            return A;
+                       }()
+                  );
+
+                  x.preVerifyStartTime = now();
+              } else {
+                  for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d) a[d]();
+                  A._completes = []
+              }
             });
 
             CONFIG_COPY.beta && beta();
@@ -381,7 +390,7 @@ function wrap(the_global, initialize) {
         checkJsApi: function(a) {
             var b = function(a) {
                 var c, d, b = a.checkResult;
-                for (c in b) d = p[c], d && (b[d] = b[c], delete b[c]);
+                for (c in b) d = API_NAMES_REVERSE[c], d && (b[d] = b[c], delete b[c]);
                 return a
             };
             c("checkJsApi", {
@@ -397,7 +406,7 @@ function wrap(the_global, initialize) {
             }())
         },
         onMenuShareTimeline: function (call_conf) {
-            d(o.onMenuShareTimeline, {
+            d(API_NAMES.onMenuShareTimeline, {
                 complete: function() {
                     c("shareTimeline", {
                         title: call_conf.title || r, // ** document.title
@@ -409,7 +418,7 @@ function wrap(the_global, initialize) {
             }, call_conf)
         },
         onMenuShareAppMessage: function (call_conf) {
-            d(o.onMenuShareAppMessage, {
+            d(API_NAMES.onMenuShareAppMessage, {
                 complete: function() {
                     c("sendAppMessage", {
                         title: call_conf.title || r,
@@ -423,7 +432,7 @@ function wrap(the_global, initialize) {
             }, call_conf)
         },
         onMenuShareQQ: function(call_conf) {
-            d(o.onMenuShareQQ, {
+            d(API_NAMES.onMenuShareQQ, {
                 complete: function() {
                     c("shareQQ", {
                         title: call_conf.title || r,
@@ -435,7 +444,7 @@ function wrap(the_global, initialize) {
             }, call_conf)
         },
         onMenuShareWeibo: function(call_conf) {
-            d(o.onMenuShareWeibo, {
+            d(API_NAMES.onMenuShareWeibo, {
                 complete: function() {
                     c("shareWeiboApp", {
                         title: call_conf.title || r,
@@ -447,7 +456,7 @@ function wrap(the_global, initialize) {
             }, call_conf)
         },
         onMenuShareQZone: function(a) {
-            d(o.onMenuShareQZone, {
+            d(API_NAMES.onMenuShareQZone, {
                 complete: function() {
                     c("shareQZone", {
                         title: a.title || r,
@@ -520,7 +529,7 @@ function wrap(the_global, initialize) {
             }())
         },
         previewImage: function(a) {
-            c(o.previewImage, {
+            c(API_NAMES.previewImage, {
                 current: a.current,
                 urls: a.urls
             }, a)
@@ -570,7 +579,7 @@ function wrap(the_global, initialize) {
         },
         getLocation: function(call_conf) {
             call_conf = call_conf || {};
-            c(o.getLocation, {
+            c(API_NAMES.getLocation, {
                 // http://en.wikipedia.org/wiki/World_Geodetic_System#A_new_World_Geodetic_System:_WGS_84
                 type: call_conf.type || "wgs84"
             }, function() {
@@ -621,7 +630,7 @@ function wrap(the_global, initialize) {
             }())
         },
         openProductSpecificView: function(a) {
-            c(o.openProductSpecificView, {
+            c(API_NAMES.openProductSpecificView, {
                 pid: a.productId,
                 view_type: a.viewType || 0
             }, a)
@@ -633,7 +642,7 @@ function wrap(the_global, initialize) {
                 card_id: g.cardId,
                 card_ext: g.cardExt
             }, d.push(h);
-            c(o.addCard, {
+            c(API_NAMES.addCard, {
                 card_list: d
             }, function() {
                 return a._complete = function(a) {
@@ -668,12 +677,12 @@ function wrap(the_global, initialize) {
                 card_id: g.cardId,
                 code: g.code
             }, d.push(h);
-            c(o.openCard, {
+            c(API_NAMES.openCard, {
                 card_list: d
             }, a)
         },
         chooseWXPay: function(a) {
-            c(o.chooseWXPay, f(a), a)
+            c(API_NAMES.chooseWXPay, f(a), a)
         }
     }, b && (a.wx = a.jWeixin = C), C
 });
