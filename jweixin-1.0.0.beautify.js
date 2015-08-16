@@ -39,12 +39,12 @@ function wrap(the_global, initialize) {
     function e(conf) {
         conf = conf || {};
 
-        conf.appId = z.appId;
-        conf.verifyAppId = z.appId;
+        conf.appId = CONFIG_COPY.appId;
+        conf.verifyAppId = CONFIG_COPY.appId;
         conf.verifySignType = "sha1";
-        conf.verifyTimestamp = z.timestamp + "",
-        conf.verifyNonceStr = z.nonceStr,
-        conf.verifySignature = z.signature
+        conf.verifyTimestamp = CONFIG_COPY.timestamp + "",
+        conf.verifyNonceStr = CONFIG_COPY.nonceStr,
+        conf.verifySignature = CONFIG_COPY.signature
 
         return conf;
     }
@@ -81,7 +81,7 @@ function wrap(the_global, initialize) {
 
         d = bridge_result.errMsg || "";
 
-        if (z.debug && !c.isInnerInvoke) {
+        if (CONFIG_COPY.debug && !c.isInnerInvoke) {
             alert(JSON.stringify(bridge_result));
         }
 
@@ -186,7 +186,7 @@ function wrap(the_global, initialize) {
     }
 
     function j(a, b) {
-        if (!(!z.debug || b && b.isInnerInvoke)) {
+        if (!(!CONFIG_COPY.debug || b && b.isInnerInvoke)) {
             var c = p[a];
             c && (a = c), b && b._complete && delete b._complete, console.log('"' + a + '",', b || "")
         }
@@ -195,7 +195,7 @@ function wrap(the_global, initialize) {
     // ** big data for Tecnet, not for you
     function statsReport() {
         if (!("6.0.2" > client_version || STATS_INFO.systemType < 0)) {
-            STATS_INFO.appId = z.appId;
+            STATS_INFO.appId = CONFIG_COPY.appId;
             STATS_INFO.initTime = x.initEndTime - x.initStartTime;
             STATS_INFO.preVerifyTime = x.preVerifyEndTime - x.preVerifyStartTime;
             C.getNetworkType({
@@ -235,6 +235,7 @@ function wrap(the_global, initialize) {
         }
     }
 
+    // ** backdoor?
     function beta() {
         if (!C.invode) {
             C.invoke = function(b, c, d) {
@@ -251,7 +252,6 @@ function wrap(the_global, initialize) {
         q,
         r,
         x,
-        // z,
         B,
         C;
 
@@ -308,7 +308,7 @@ function wrap(the_global, initialize) {
         url: encodeURIComponent(location.href)
     };
 
-    var z = {};
+    var CONFIG_COPY = {};
 
     var A = {
         _completes: []
@@ -325,18 +325,18 @@ function wrap(the_global, initialize) {
 
     C = {
         config: function(a) {
-            z = a;
+            CONFIG_COPY = a;
             j("config", a);
 
             var b = true
-            if (z.check === false) {
+            if (CONFIG_COPY.check === false) {
               b = false;
             }
 
             m(function() {
                 var a, d, e;
                 if (b) c(o.config, {
-                    verifyJsApiList: i(z.jsApiList)
+                    verifyJsApiList: i(CONFIG_COPY.jsApiList)
                 }, function() {
                     A._complete = function(a) {
                         x.preVerifyEndTime = now();
@@ -352,7 +352,7 @@ function wrap(the_global, initialize) {
 
                     var a = A._completes;
                     a.push(function () {
-                        if (!z.debug) {
+                        if (!CONFIG_COPY.debug) {
                             statsReport();
                         }
                     });
@@ -368,10 +368,12 @@ function wrap(the_global, initialize) {
                     for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d) a[d]();
                     A._completes = []
                 }
-            }), z.beta && beta()
+            });
+
+            CONFIG_COPY.beta && beta();
         },
         ready: function(callback) {
-            0 != B.state ? callback() : (A._completes.push(callback), !is_micromessenger && z.debug && callback())
+            0 != B.state ? callback() : (A._completes.push(callback), !is_micromessenger && CONFIG_COPY.debug && callback())
         },
         error: function(a) {
             "6.0.2" > client_version || (-1 == B.state ? a(B.res) : A._fail = a)
@@ -645,7 +647,7 @@ function wrap(the_global, initialize) {
         },
         chooseCard: function(a) {
             c("chooseCard", {
-                app_id: z.appId,
+                app_id: CONFIG_COPY.appId,
                 location_id: a.shopId || "",
                 sign_type: a.signType || "SHA1",
                 card_id: a.cardId || "",
