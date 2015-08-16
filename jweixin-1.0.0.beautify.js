@@ -235,12 +235,15 @@ function wrap(the_global, initialize) {
         }
     }
 
-    function n() {
-        C.invoke || (C.invoke = function(b, c, d) {
-            a.WeixinJSBridge && WeixinJSBridge.invoke(b, e(c), d)
-        }, C.on = function(b, c) {
-            a.WeixinJSBridge && WeixinJSBridge.on(b, c)
-        })
+    function beta() {
+        if (!C.invode) {
+            C.invoke = function(b, c, d) {
+                a.WeixinJSBridge && WeixinJSBridge.invoke(b, e(c), d);
+            }
+            C.on = function(b, c) {
+                a.WeixinJSBridge && WeixinJSBridge.on(b, c);
+            }
+        }
     }
 
     var o,
@@ -248,7 +251,7 @@ function wrap(the_global, initialize) {
         q,
         r,
         x,
-        z,
+        // z,
         B,
         C;
 
@@ -305,7 +308,7 @@ function wrap(the_global, initialize) {
         url: encodeURIComponent(location.href)
     };
 
-    z = {};
+    var z = {};
 
     var A = {
         _completes: []
@@ -365,7 +368,7 @@ function wrap(the_global, initialize) {
                     for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d) a[d]();
                     A._completes = []
                 }
-            }), z.beta && n()
+            }), z.beta && beta()
         },
         ready: function(callback) {
             0 != B.state ? callback() : (A._completes.push(callback), !is_micromessenger && z.debug && callback())
