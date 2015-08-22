@@ -647,7 +647,8 @@ function wrap(the_global, initialize) {
         openProductSpecificView: function(a) {
             c(API_NAMES.openProductSpecificView, {
                 pid: a.productId,
-                view_type: a.viewType || 0
+                view_type: a.viewType || 0,
+                ext_info: a.extInfo
             }, a)
         },
         addCard: function(a) {
