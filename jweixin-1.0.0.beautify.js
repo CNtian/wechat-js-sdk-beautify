@@ -235,11 +235,11 @@
 
     // ** backdoor?
     function beta() {
-        if (!C.invode) {
-            C.invoke = function(b, c, d) {
+        if (!H.invoke) {
+            H.invoke = function(b, c, d) {
                 a.WeixinJSBridge && WeixinJSBridge.invoke(b, e(c), d);
             }
-            C.on = function(b, c) {
+            H.on = function(b, c) {
                 a.WeixinJSBridge && WeixinJSBridge.on(b, c);
             }
         }
@@ -247,9 +247,9 @@
 
     var q,
         r,
-        x,
-        B,
-        C;
+        F,
+        G,
+        H;
 
     if (!a.jWeixin) {
       var API_NAMES = {
@@ -278,17 +278,23 @@
       q = a.document;
       r = q.title;
 
-      var user_agent = navigator.userAgent.toLowerCase();
-      var IS_MICRO_MESSENGER = -1 != user_agent.indexOf("micromessenger");
-      var IS_ANDROID = -1 != user_agent.indexOf("android");
-      var IS_IOS = -1 != user_agent.indexOf("iphone") || -1 != user_agent.indexOf("ipad");
+      var user_agent = navigator.userAgent.toLowerCase();                                   // => s
+      var t = navigator.platform.toLowerCase();                                             // => t
+      var u = !(!t.match("mac") && !t.match("win"));                                        // => u
+      var v = -1 != s.indexOf("wxdebugger");                                                // => v
+      var IS_MICRO_MESSENGER = -1 != user_agent.indexOf("micromessenger");                  // => w
+      var IS_ANDROID = -1 != user_agent.indexOf("android");                                 // => x
+      var IS_IOS = -1 != user_agent.indexOf("iphone") || -1 != user_agent.indexOf("ipad");  // => y
 
-      var client_version = function() {
+      var client_version = function() { // => z
           var a = user_agent.match(/micromessenger\/(\d+\.\d+\.\d+)/) || user_agent.match(/micromessenger\/(\d+\.\d+)/);
           return a ? a[1] : ""
       }();
 
-      x = {
+      var A = false; // => A
+      var B = false; // => B
+
+      C = {
           initStartTime: now(),
           initEndTime: 0,
           preVerifyStartTime: 0,
@@ -309,20 +315,20 @@
 
       var CONFIG_COPY = {};
 
-      var A = {
+      var F = {
           _completes: []
       };
 
-      B = {
+      G = {
           state: 0,
           res: {}
       };
 
       m(function() {
-          x.initEndTime = now()
+          C.initEndTime = now()
       });
 
-      C = {
+      H = {
           config: function(ORIG_CONF) {
               CONFIG_COPY = ORIG_CONF;
               j("config", ORIG_CONF);
@@ -341,48 +347,48 @@
                               verifyJsApiList: i(CONFIG_COPY.jsApiList)
                           },
                           function () {
-                              A._complete = function(res) {
-                                  x.preVerifyEndTime = now();
-                                  B.state = 1;
-                                  B.res = res;
+                              F._complete = function(res) {
+                                  C.preVerifyEndTime = now();
+                                  G.state = 1;
+                                  G.res = res;
                               };
-                              A.success = function() {
+                              F.success = function() {
                                   STATS_INFO.isPreVerifyOk = 0;
                               };
-                              A.fail = function(err) {
-                                  A._fail ? A._fail(err) : B.state = -1
+                              F.fail = function(err) {
+                                  F._fail ? F._fail(err) : G.state = -1
                               };
 
-                              var a = A._completes;
+                              var a = F._completes;
                               a.push(function () {
                                   if (!CONFIG_COPY.debug) {
                                       statsReport();
                                   }
                               });
 
-                              A.complete = function() {
+                              F.complete = function() {
                                   for (var c = 0, d = a.length; d > c; ++c) a[c]();
-                                  A._completes = []
+                                  F._completes = []
                               };
 
-                              return A;
+                              return F;
                          }()
                     );
 
-                    x.preVerifyStartTime = now();
+                    C.preVerifyStartTime = now();
                 } else {
-                    for (B.state = 1, a = A._completes, d = 0, e = a.length; e > d; ++d) a[d]();
-                    A._completes = []
+                    for (G.state = 1, a = F._completes, d = 0, e = a.length; e > d; ++d) a[d]();
+                    F._completes = []
                 }
               });
 
               CONFIG_COPY.beta && beta();
           },
           ready: function (callback) {
-              if (B.state != 0) {
+              if (G.state != 0) {
                   callback();
               } else {
-                  A._completes.push(callback);
+                  F._completes.push(callback);
                   if (!IS_MICRO_MESSENGER && CONFIG_COPY.debug) {
                       callback();
                   }
@@ -392,10 +398,10 @@
               if ("6.0.2" > client_version) {
                   return;
               } else {
-                  if (B.state == -1) {
-                      callback(B.res)
+                  if (G.state == -1) {
+                      callback(G.res)
                   } else {
-                      A._fail = callback;
+                      F._fail = callback;
                   }
               }
           },
@@ -697,8 +703,8 @@
           chooseWXPay: function(a) {
               c(API_NAMES.chooseWXPay, f(a), a)
           }
-      }, b && (a.wx = a.jWeixin = C)
+      }, b && (a.wx = a.jWeixin = H)
 
-      return C;
+      return H;
     }
 });
