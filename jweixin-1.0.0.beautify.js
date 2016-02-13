@@ -67,7 +67,7 @@
         if (!d) {
             d = bridge_result.err_msg;
             delete bridge_result.err_msg;
-            d = h(a, d, c);
+            d = h(a, d);
             bridge_result.errMsg = d;
         }
 
@@ -108,71 +108,54 @@
         }
     }
 
-    function h(api_name, err_msg) {
-        var e;
+    function h(apiName, errMsg) {
+        var api = apiName;
 
-        if (err_msg) {
-            var idx = err_msg.indexOf(':');
-
-            switch (api_name) {
-                case API_NAMES.config:
-                    e = "config";
-                    break;
-                case API_NAMES.openProductSpecificView:
-                    e = "openProductSpecificView";
-                    break;
-                default:
-                    e = err_msg.substring(0, idx);
-                    e = e.replace(/_/g, " ");
-                    // \b  word boundary
-                    // http://blog.csdn.net/lxcnn/article/details/4355364
-                    // CamelCase
-                    // http://en.wikipedia.org/wiki/CamelCase
-                    e = e.replace(/\b\w+\b/g, function (a) {
-                        return a.substring(0, 1).toUpperCase() + a.substring(1);
-                    });
-                    e = e.substring(0, 1).toLowerCase() + e.substring(1);
-                    e = e.replace(/ /g, "");
-
-                    if (e.indexOf('Wcpay') !== -1) {
-                        e = e.replace('Wcpay', 'WCPay');
-                    }
-
-                    var f = q[e];
-                    if (f) {
-                        e = f;
-                    }
-            }
-
-            var g = err_msg.substring(idx + 1);
-
-            if (g === 'confirm') {
-                g = 'ok';
-            }
-
-            if (g.indexOf('failed_') !== -1) {
-                g = g.substring(7);
-            }
-
-            if (g.indexOf('fail_') !== -1) {
-                g = g.substring(5);
-            }
-
-            g = g.replace(/_/g, " ");
-            g = g.toLowerCase();
-
-            if (g === 'access denied' || g === 'no permission to execute') {
-                g = 'permission denied';
-            }
-
-            if (e === 'config' && g === 'function not exist') {
-                g = 'ok';
-            }
-
-            err_msg = e + ":" + g
+        if (apiName in p) {
+          api = p[apiName];
         }
 
-        return err_msg;
+        var e = 'ok';
+
+        if (errMsg) {
+          e = errMsg.substring(errMsg.indexOf(':') + 1);
+
+          if (e === 'confirm') {
+            e = 'ok';
+          }
+
+          if (e === 'failed') {
+            e = 'fail';
+          }
+
+          if (e.indexOf("failed_") > -1) {
+            e = e.substring(7);
+          }
+
+          if (e.indexOf("fail_") > -1) {
+            e = e.substring(5)
+          }
+
+          e = e.replace(/_/g, " ");
+
+          e = e.toLowerCase();
+
+          if (e === 'access denied' || e === 'no permission to execute') {
+            e = 'permission denied';
+          }
+
+          if (api === 'config' && e === 'function not exist') {
+            e = 'ok';
+          }
+
+          if (e === '') {
+            e = 'fail';
+          }
+        }
+
+        errMsg = api + ':' + e;
+
+        return errMsg;
     }
 
     function i(a) {
@@ -192,29 +175,29 @@
 
     // ** big data for Tecnet, not for you
     function statsReport() {
-        if (!("6.0.2" > client_version || STATS_INFO.systemType < 0)) {
-            STATS_INFO.appId = CONFIG_COPY.appId;
-            STATS_INFO.initTime = x.initEndTime - x.initStartTime;
-            STATS_INFO.preVerifyTime = x.preVerifyEndTime - x.preVerifyStartTime;
-            C.getNetworkType({
-                isInnerInvoke: true,
-                success: function (a) {
-                    STATS_INFO.networkType = a.networkType;
-                    var src = "https://open.weixin.qq.com/sdk/report?v=" + STATS_INFO.version
-                    src += "&o=" + STATS_INFO.isPreVerifyOk;
-                    src += "&s=" + STATS_INFO.systemType;
-                    src += "&src=" + STATS_INFO.clientVersion;
-                    src += "&a=" + STATS_INFO.appId;
-                    src += "&n=" + STATS_INFO.networkType;
-                    src += "&i=" + STATS_INFO.initTime;
-                    src += "&p=" + STATS_INFO.preVerifyTime;
-                    src += "&u=" + STATS_INFO.url;
-
-                    var b = new Image;
-                    b.src = src
-                }
-            })
-        }
+      if (!(D.isPreVerifyOk || u || v || E.debug || "6.0.2" > z || D.systemType < 0 || A)) {
+        A = true;
+        D.appId = E.appId;
+        D.initTime = C.initEndTime - C.initStartTime;
+        D.preVerifyTime = C.preVerifyEndTime - C.preVerifyStartTime;
+        H.getNetworkType({
+           isInnerInvoke: true,
+           success: function (a) {
+               D.networkType = a.networkType;
+               var src = "http://open.weixin.qq.com/sdk/report?v=" + D.version
+                       + "&o=" + D.isPreVerifyOk
+                       + "&s=" + D.systemType
+                       + "&c=" + D.clientVersion
+                       + "&a=" + D.appId
+                       + "&n=" + D.networkType
+                       + "&i=" + D.initTime
+                       + "&p=" + D.preVerifyTime
+                       + "&u=" + D.url;
+               var img = new Image;
+               img.src = src;
+           }
+        });
+      }
     }
 
     function now() {
