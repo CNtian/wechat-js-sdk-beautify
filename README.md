@@ -2,9 +2,15 @@
 
 人肉反编译 http://res.wx.qq.com/open/js/jweixin-1.0.0.js
 
+# with asserts!
+
+微信的错误提示简直 (╯°□°)╯︵ ┻━┻
+
+所以在开发环境请使用 jweixin-1.0.0.beautify.with.assert.js ┬─┬ ノ(°_°ノ)
+
 # last update
 
-2015.AUG.22
+2016.FEB.13
 
 # how to
 
