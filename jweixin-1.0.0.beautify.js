@@ -1,4 +1,4 @@
-function wrap(the_global, initialize) {
+!function wrap(the_global, initialize) {
   if (typeof define === 'function' && (define.amd || define.cmd)) {
     define(function () {
       return initialize(the_global);
@@ -6,11 +6,9 @@ function wrap(the_global, initialize) {
   } else {
     initialize(the_global, true);
   }
-}
-
-// a => the_global
-// b => initialize
-!wrap(this, function(a, b) {
+}(this, function(a, b) {
+    // a => the_global
+    // b => initialize
     // ** mapping to `invoke`
     function c(api_name, conf, conf_of_callback) {
         a.WeixinJSBridge ? WeixinJSBridge.invoke(api_name, e(conf), function(result) {
