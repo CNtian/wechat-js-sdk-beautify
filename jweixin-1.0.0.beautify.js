@@ -264,7 +264,7 @@
       var user_agent = navigator.userAgent.toLowerCase();                                   // => s
       var t = navigator.platform.toLowerCase();                                             // => t
       var u = !(!t.match("mac") && !t.match("win"));                                        // => u
-      var v = -1 != user_agent.indexOf("wxdebugger");                                                // => v
+      var v = -1 != user_agent.indexOf("wxdebugger");                                       // => v
       var IS_MICRO_MESSENGER = -1 != user_agent.indexOf("micromessenger");                  // => w
       var IS_ANDROID = -1 != user_agent.indexOf("android");                                 // => x
       var IS_IOS = -1 != user_agent.indexOf("iphone") || -1 != user_agent.indexOf("ipad");  // => y
@@ -314,6 +314,29 @@
       H = {
           config: function(ORIG_CONF) {
               CONFIG_COPY = ORIG_CONF;
+
+              // asserts {
+              if (!CONFIG_COPY.appId) {
+                alert('[assert]: appId is required');
+              }
+
+              if (!CONFIG_COPY.timestamp) {
+                alert('[assert]: timestamp is required');
+              }
+
+              if (!CONFIG_COPY.nonceStr) {
+                alert('[assert]: nonceStr is required');
+              }
+
+              if (!CONFIG_COPY.signature) {
+                alert('[assert]: signature is required');
+              }
+
+              if (!CONFIG_COPY.jsApiList || CONFIG_COPY.jsApiList.length === 0) {
+                alert('[assert]: jsApiList is required');
+              }
+              // } asserts
+
               j("config", ORIG_CONF);
 
               var b = true

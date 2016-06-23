@@ -17,6 +17,11 @@
   },
   "homepage": "https://github.com/hbrls/weixin-js-sdk-beautify",
   "devDependencies": {
+    "gulp": "3.9.1",
+    "gulp-rename": "1.2.2",
     "js-beautify": "^1.5.6"
+  },
+  "dependencies": {
+    "gulp-rev": "7.1.0"
   }
 }
