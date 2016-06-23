@@ -111,8 +111,8 @@
     function h(apiName, errMsg) {
         var api = apiName;
 
-        if (apiName in p) {
-          api = p[apiName];
+        if (apiName in API_NAMES_REVERSE) {
+          api = API_NAMES_REVERSE[apiName];
         }
 
         var e = 'ok';
@@ -175,24 +175,24 @@
 
     // ** big data for Tecnet, not for you
     function statsReport() {
-      if (!(D.isPreVerifyOk || u || v || E.debug || "6.0.2" > z || D.systemType < 0 || A)) {
+      if (!(STATS_INFO.isPreVerifyOk || u || v || E.debug || "6.0.2" > z || STATS_INFO.systemType < 0 || A)) {
         A = true;
-        D.appId = E.appId;
-        D.initTime = C.initEndTime - C.initStartTime;
-        D.preVerifyTime = C.preVerifyEndTime - C.preVerifyStartTime;
+        STATS_INFO.appId = E.appId;
+        STATS_INFO.initTime = C.initEndTime - C.initStartTime;
+        STATS_INFO.preVerifyTime = C.preVerifyEndTime - C.preVerifyStartTime;
         H.getNetworkType({
            isInnerInvoke: true,
            success: function (a) {
-               D.networkType = a.networkType;
-               var src = "http://open.weixin.qq.com/sdk/report?v=" + D.version
-                       + "&o=" + D.isPreVerifyOk
-                       + "&s=" + D.systemType
-                       + "&c=" + D.clientVersion
-                       + "&a=" + D.appId
-                       + "&n=" + D.networkType
-                       + "&i=" + D.initTime
-                       + "&p=" + D.preVerifyTime
-                       + "&u=" + D.url;
+               STATS_INFO.networkType = a.networkType;
+               var src = "http://open.weixin.qq.com/sdk/report?v=" + STATS_INFO.version
+                       + "&o=" + STATS_INFO.isPreVerifyOk
+                       + "&s=" + STATS_INFO.systemType
+                       + "&c=" + STATS_INFO.clientVersion
+                       + "&a=" + STATS_INFO.appId
+                       + "&n=" + STATS_INFO.networkType
+                       + "&i=" + STATS_INFO.initTime
+                       + "&p=" + STATS_INFO.preVerifyTime
+                       + "&u=" + STATS_INFO.url;
                var img = new Image;
                img.src = src;
            }
@@ -264,7 +264,7 @@
       var user_agent = navigator.userAgent.toLowerCase();                                   // => s
       var t = navigator.platform.toLowerCase();                                             // => t
       var u = !(!t.match("mac") && !t.match("win"));                                        // => u
-      var v = -1 != s.indexOf("wxdebugger");                                                // => v
+      var v = -1 != user_agent.indexOf("wxdebugger");                                       // => v
       var IS_MICRO_MESSENGER = -1 != user_agent.indexOf("micromessenger");                  // => w
       var IS_ANDROID = -1 != user_agent.indexOf("android");                                 // => x
       var IS_IOS = -1 != user_agent.indexOf("iphone") || -1 != user_agent.indexOf("ipad");  // => y
