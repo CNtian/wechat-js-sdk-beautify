@@ -1,4 +1,4 @@
-# weixin-js-sdk-beautify
+# wechat-js-sdk-beautify
 
 人肉反编译 http://res.wx.qq.com/open/js/jweixin-1.0.0.js
 
@@ -6,11 +6,11 @@
 
 微信的错误提示简直 (╯°□°)╯︵ ┻━┻
 
-所以在开发环境请使用 jweixin-1.0.0.beautify.with.assert.js ┬─┬ ノ(°_°ノ)
+所以在开发环境请使用 jweixin-1.0.0.beautify.js ┬─┬ ノ(°_°ノ)
 
-# last update
+# last keepup
 
-2016.FEB.13
+2017.FEB.03
 
 # how to
 

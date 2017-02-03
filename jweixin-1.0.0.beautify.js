@@ -175,29 +175,33 @@
 
     // ** big data for Tecnet, not for you
     function statsReport() {
-      if (!(STATS_INFO.isPreVerifyOk || u || v || E.debug || "6.0.2" > z || STATS_INFO.systemType < 0 || A)) {
-        A = true;
-        STATS_INFO.appId = E.appId;
-        STATS_INFO.initTime = C.initEndTime - C.initStartTime;
-        STATS_INFO.preVerifyTime = C.preVerifyEndTime - C.preVerifyStartTime;
-        H.getNetworkType({
-           isInnerInvoke: true,
-           success: function (a) {
-               STATS_INFO.networkType = a.networkType;
-               var src = "http://open.weixin.qq.com/sdk/report?v=" + STATS_INFO.version
-                       + "&o=" + STATS_INFO.isPreVerifyOk
-                       + "&s=" + STATS_INFO.systemType
-                       + "&c=" + STATS_INFO.clientVersion
-                       + "&a=" + STATS_INFO.appId
-                       + "&n=" + STATS_INFO.networkType
-                       + "&i=" + STATS_INFO.initTime
-                       + "&p=" + STATS_INFO.preVerifyTime
-                       + "&u=" + STATS_INFO.url;
-               var img = new Image;
-               img.src = src;
-           }
-        });
-      }
+        if (STATS_INFO.preVerifyState) {
+            if (u || v || E.debug || "6.0.2" > z || STATS_INFO.systemType < 0 || A) {
+                // pass
+            } else {
+                A = true;
+                STATS_INFO.appId = E.appId;
+                STATS_INFO.initTime = C.initEndTime - C.initStartTime;
+                STATS_INFO.preVerifyTime = C.preVerifyEndTime - C.preVerifyStartTime;
+                H.getNetworkType({
+                   isInnerInvoke: true,
+                   success: function (a) {
+                       STATS_INFO.networkType = a.networkType;
+                       var src = "http://open.weixin.qq.com/sdk/report?v=" + STATS_INFO.version
+                               + "&o=" + STATS_INFO.preVerifyState
+                               + "&s=" + STATS_INFO.systemType
+                               + "&c=" + STATS_INFO.clientVersion
+                               + "&a=" + STATS_INFO.appId
+                               + "&n=" + STATS_INFO.networkType
+                               + "&i=" + STATS_INFO.initTime
+                               + "&p=" + STATS_INFO.preVerifyTime
+                               + "&u=" + STATS_INFO.url;
+                       var img = new Image;
+                       img.src = src;
+                   }
+                });
+            }
+        }
     }
 
     function now() {
@@ -290,7 +294,7 @@
           initTime: 0,
           preVerifyTime: 0,
           networkType: "",
-          isPreVerifyOk: 1,
+          preVerifyState: 1,
           systemType: IS_IOS ? 1 : IS_ANDROID ? 2 : -1,
           clientVersion: client_version,
           url: encodeURIComponent(location.href)
@@ -359,7 +363,7 @@
                                   G.res = res;
                               };
                               F.success = function() {
-                                  STATS_INFO.isPreVerifyOk = 0;
+                                  STATS_INFO.preVerifyState = 0;
                               };
                               F.fail = function(err) {
                                   F._fail ? F._fail(err) : G.state = -1

@@ -66,13 +66,13 @@
     }
 
     function k() {
-        D.isPreVerifyOk || u || v || E.debug || "6.0.2" > z || D.systemType < 0 || A || (A = !0, D.appId = E.appId, D.initTime = C.initEndTime - C.initStartTime, D.preVerifyTime = C.preVerifyEndTime - C.preVerifyStartTime, H.getNetworkType({
+        0 != D.preVerifyState && (u || v || E.debug || "6.0.2" > z || D.systemType < 0 || A || (A = !0, D.appId = E.appId, D.initTime = C.initEndTime - C.initStartTime, D.preVerifyTime = C.preVerifyEndTime - C.preVerifyStartTime, H.getNetworkType({
             isInnerInvoke: !0,
             success: function(a) {
                 var b, c;
-                D.networkType = a.networkType, b = "http://open.weixin.qq.com/sdk/report?v=" + D.version + "&o=" + D.isPreVerifyOk + "&s=" + D.systemType + "&c=" + D.clientVersion + "&a=" + D.appId + "&n=" + D.networkType + "&i=" + D.initTime + "&p=" + D.preVerifyTime + "&u=" + D.url, c = new Image, c.src = b
+                D.networkType = a.networkType, b = "http://open.weixin.qq.com/sdk/report?v=" + D.version + "&o=" + D.preVerifyState + "&s=" + D.systemType + "&c=" + D.clientVersion + "&a=" + D.appId + "&n=" + D.networkType + "&i=" + D.initTime + "&p=" + D.preVerifyTime + "&u=" + D.url, c = new Image, c.src = b
             }
-        }))
+        })))
     }
 
     function l() {
@@ -122,7 +122,7 @@
         initTime: 0,
         preVerifyTime: 0,
         networkType: "",
-        isPreVerifyOk: 1,
+        preVerifyState: 1,
         systemType: y ? 1 : x ? 2 : -1,
         clientVersion: z,
         url: encodeURIComponent(location.href)
@@ -145,7 +145,7 @@
                     F._complete = function(a) {
                         C.preVerifyEndTime = l(), G.state = 1, G.data = a
                     }, F.success = function() {
-                        D.isPreVerifyOk = 0
+                        D.preVerifyState = 0
                     }, F.fail = function(a) {
                         F._fail ? F._fail(a) : G.state = -1
                     };
